@@ -5,23 +5,23 @@ import (
 	"time"
 )
 
-// NewMetric is a factory method for Metric
-func NewMetric(group, dimension string, value interface{}) *Metric {
-	return &Metric{
+// NewMetricSample is a factory method for Metric
+func NewMetricSample(metric string, value interface{}) *MetricSample {
+	return &MetricSample{
 		Timestamp: time.Now(),
-		Dimension: dimension,
+		Metric:    metric,
 		Value:     value,
 	}
 }
 
-// Metric represents a generic metric collection event
-type Metric struct {
+// MetricSample represents a generic sample of a metric in time
+type MetricSample struct {
 
 	// Timestamp of when the metric was captured
 	Timestamp time.Time `json:"t"`
 
 	// Dimension this metric represents
-	Dimension string `json:"d"`
+	Metric string `json:"m"`
 
 	// Value of this metric
 	Value interface{} `json:"v"`
@@ -30,19 +30,19 @@ type Metric struct {
 	Unit string `json:"u,omitempty"`
 
 	// Context data for this metric
-	Context map[string]string `json:"ctx,omitempty"`
+	Context map[string]string `json:"c,omitempty"`
 }
 
 // SetUnit sets metric unit
 // and return itself to allow for chaining
-func (m *Metric) SetUnit(unit string) *Metric {
+func (m *MetricSample) SetUnit(unit string) *MetricSample {
 	m.Unit = unit
 	return m
 }
 
 // AddContext adds context to this metric
 // and return itself to allow for chaining
-func (m *Metric) AddContext(key, val string) *Metric {
+func (m *MetricSample) AddContext(key, val string) *MetricSample {
 
 	if m.Context == nil {
 		m.Context = make(map[string]string)
@@ -52,9 +52,9 @@ func (m *Metric) AddContext(key, val string) *Metric {
 	return m
 }
 
-func (m *Metric) String() string {
+func (m *MetricSample) String() string {
 	return fmt.Sprintf(
-		"Metric: [ Dimension:%s, Timestamp:%v, Value:%v, Unit:%s, Context:%v ]",
-		m.Dimension, m.Timestamp, m.Value, m.Unit, m.Context,
+		"Sample: [ Timestamp:%v, Metric:%s, Value:%v, Unit:%s, Context:%v ]",
+		m.Timestamp, m.Metric, m.Value, m.Unit, m.Context,
 	)
 }

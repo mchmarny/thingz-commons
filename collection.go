@@ -4,42 +4,41 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"time"
 )
 
-// NewMetric is a factory method for MetricCollection
-func NewMetricCollection(group string, at time.Time) *MetricCollection {
-	var list []*Metric
+// NewMetricCollection is a factory method for MetricCollection
+func NewMetricCollection(src, dim string) *MetricCollection {
 	return &MetricCollection{
-		Runtime: at,
-		Group:   group,
-		Metrics: list,
+		Source:    src,
+		Dimension: dim,
+		Metrics:   make([]*MetricSample, 0),
 	}
 }
 
 // MetricCollection represents a generic metric collection event
 type MetricCollection struct {
 
-	// Runtime of when the metric was captured
-	Runtime time.Time `json:"t"`
+	// Source this collection represents
+	Source string `json:"src"`
 
-	// Group this metric represents
-	Group string `json:"group"`
+	// Dimension of metrics this collection represents
+	Dimension string `json:"dim"`
 
 	// Metrics represents a collection of metric items
-	Metrics []*Metric `json:"metrics"`
+	Metrics []*MetricSample `json:"list"`
 }
 
 // Add adds metric to collection
 // and return itself to allow for chaining
-func (m *MetricCollection) Add(item *Metric) {
+func (m *MetricCollection) Add(item *MetricSample) {
 	m.Metrics = append(m.Metrics, item)
 }
 
+// String
 func (m *MetricCollection) String() string {
 	return fmt.Sprintf(
-		"MetricCollection: [ Group:%s, Runtime:%s, Metrics:%v ]",
-		m.Group, m.Runtime, m.Metrics,
+		"MetricCollection: [ Source:%s, Dimension:%s, Metrics:%v ]",
+		m.Source, m.Dimension, m.Metrics,
 	)
 }
 
@@ -52,8 +51,8 @@ func (m *MetricCollection) ToBytes() []byte {
 	return b
 }
 
-// Parse converts array of bytes into MetricCollection pointer
-func (m *MetricCollection) Parse(data []byte) (*MetricCollection, error) {
+// ParseMetricCollection converts array of bytes into MetricCollection pointer
+func ParseMetricCollection(data []byte) (*MetricCollection, error) {
 	col := &MetricCollection{}
 	if err := json.Unmarshal(data, &col); err != nil {
 		log.Printf("unable to unmarshal: %s", string(data))
