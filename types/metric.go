@@ -52,6 +52,7 @@ func (m *MetricSample) AddContext(key, val string) *MetricSample {
 	return m
 }
 
+// String
 func (m *MetricSample) String() string {
 	return fmt.Sprintf(
 		"Sample: [ Timestamp:%v, Metric:%s, Value:%v, Unit:%s, Context:%v ]",

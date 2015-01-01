@@ -27,6 +27,7 @@ func (m *Metadata) AddMetric(name, desc string) *Metadata {
 	return m
 }
 
+// String
 func (m *Metadata) String() string {
 	return fmt.Sprintf("Metadata: %s [%v]", m.Group, m.Metrics)
 }
